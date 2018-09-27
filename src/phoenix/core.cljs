@@ -149,5 +149,5 @@
    (switch-app "c" "iTerm")
    (switch-app "e" "Emacs")
    (switch-app "b" "Google Chrome")
-   (switch-app "m" "Slack")
-   (switch-app "k" "KeePassX")])
+   (switch-app "s" "Safari")
+   (switch-app "n" "Notes")])
