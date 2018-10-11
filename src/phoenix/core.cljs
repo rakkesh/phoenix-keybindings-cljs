@@ -61,6 +61,8 @@
                              :width (half-screen-width window screen-frame)
                              :height (.-height screen-frame)}))))
 
+(def margin 0.05)
+
 (defn to-left-up []
   (when-let [window (.focused js/Window)]
     (let [screen-frame (.flippedVisibleFrame (.screen window))]
@@ -113,6 +115,69 @@
   (when-let [window (.focused js/Window)]
     (.setFrame window (.flippedVisibleFrame (.screen window)))))
 
+(defn trim-upper []
+  (when-let [window (.focused js/Window)]
+    (let [window-frame (.frame window)]
+      (.setFrame window #js {:x (.-x window-frame)
+                             :y (+ (.-y window-frame) (* margin (.-height window-frame)))
+                             :width (.-width window-frame)
+                             :height (* (- 1 margin) (.-height window-frame))}))))
+
+(defn trim-lower []
+  (when-let [window (.focused js/Window)]
+    (let [window-frame (.frame window)]
+      (.setFrame window #js {:x (.-x window-frame)
+                             :y (.-y window-frame)
+                             :width (.-width window-frame)
+                             :height (* (- 1 margin) (.-height window-frame))}))))
+
+(defn trim-right []
+  (when-let [window (.focused js/Window)]
+    (let [window-frame (.frame window)]
+      (.setFrame window #js {:x (.-x window-frame)
+                             :y (.-y window-frame)
+                             :width (* (- 1 margin) (.-width window-frame))
+                             :height (.-height window-frame)}))))
+
+(defn trim-left []
+  (when-let [window (.focused js/Window)]
+    (let [window-frame (.frame window)]
+      (.setFrame window #js {:x (+ (.-x window-frame) (* margin (.-width window-frame)))
+                             :y (.-y window-frame)
+                             :width (* (- 1 margin) (.-width window-frame))
+                             :height (.-height window-frame)}))))
+
+(defn extend-upper []
+  (when-let [window (.focused js/Window)]
+    (let [window-frame (.frame window)]
+      (.setFrame window #js {:x (.-x window-frame)
+                             :y (- (.-y window-frame) (* margin (.-height window-frame)))
+                             :width (.-width window-frame)
+                             :height (* (+ 1 margin) (.-height window-frame))}))))
+
+(defn extend-lower []
+  (when-let [window (.focused js/Window)]
+    (let [window-frame (.frame window)]
+      (.setFrame window #js {:x (.-x window-frame)
+                             :y (.-y window-frame)
+                             :width (.-width window-frame)
+                             :height (* (+ 1 margin) (.-height window-frame))}))))
+
+(defn extend-right []
+  (when-let [window (.focused js/Window)]
+    (let [window-frame (.frame window)]
+      (.setFrame window #js {:x (.-x window-frame)
+                             :y (.-y window-frame)
+                             :width (* (+ 1 margin) (.-width window-frame))
+                             :height (.-height window-frame)}))))
+
+(defn extend-left []
+  (when-let [window (.focused js/Window)]
+    (let [window-frame (.frame window)]
+      (.setFrame window #js {:x (- (.-x window-frame) (* margin (.-width window-frame)))
+                             :y (.-y window-frame)
+                             :width (* (+ 1 margin) (.-width window-frame))
+                             :height (.-height window-frame)}))))
 
 (def round js/Math.round)
 
@@ -175,17 +240,29 @@
 (def ^:export bound-keys
   [(bind "h" ["alt" "cmd" "ctrl"] debug)
 
-   (bind "left" ["alt" "cmd" "ctrl"] left-one-monitor)
-   (bind "right" ["alt" "cmd" "ctrl"] right-one-monitor)
+   (bind "left" ["ctrl" "alt" "cmd"] left-one-monitor)
+   (bind "right" ["ctrl" "alt" "cmd"] right-one-monitor)
 
    (bind "left" ["alt" "cmd"] to-left-half)
-   (bind "left" ["shift" "alt"] to-left-up)
-   (bind "left" ["shift" "cmd"] to-left-down)
    (bind "right" ["alt" "cmd"] to-right-half)
-   (bind "right" ["shift" "alt"] to-right-up)
-   (bind "right" ["shift" "cmd"] to-right-down)
-   (bind "f" ["alt" "cmd"] to-fullscreen)
-   (bind "down" ["alt" "cmd"] to-middle)
+
+   (bind "right" ["shift" "ctrl" "alt"] trim-left)
+   (bind "left" ["shift" "ctrl" "alt"] trim-right)
+   (bind "down" ["shift" "ctrl" "alt"] trim-upper)
+   (bind "up" ["shift" "ctrl" "alt"] trim-lower)
+
+   (bind "left" ["ctrl" "alt"] extend-left)
+   (bind "right" ["ctrl" "alt"] extend-right)
+   (bind "up" ["ctrl" "alt"] extend-upper)
+   (bind "down" ["ctrl" "alt"] extend-lower)
+
+   (bind "f14" ["alt" "cmd"] to-middle)
+   (bind "f15" ["alt" "cmd"] to-fullscreen)
+
+   (bind "f16" ["alt" "cmd"] to-left-up)
+   (bind "f17" ["alt" "cmd"] to-left-down)
+   (bind "f18" ["alt" "cmd"] to-right-up)
+   (bind "f19" ["alt" "cmd"] to-right-down)
 
    (switch-app "c" "iTerm")
    (switch-app "e" "Emacs")
