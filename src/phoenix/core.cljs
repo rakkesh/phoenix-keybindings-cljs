@@ -53,10 +53,34 @@
   (+ (* 0.5 (.-height screen-frame))
      (app-width-adjustment (.app window) (.-height screen-frame))))
 
+(defn to-upper-half []
+  (when-let [window (.focused js/Window)]
+    (let [screen-frame (.flippedVisibleFrame (.screen window))]
+      (.setFrame window #js {:x (.-x screen-frame)
+                             :y (.-y screen-frame)
+                             :width (.-width screen-frame)
+                             :height (half-screen-height window screen-frame)}))))
+
+(defn to-lower-half []
+  (when-let [window (.focused js/Window)]
+    (let [screen-frame (.flippedVisibleFrame (.screen window))]
+      (.setFrame window #js {:x (.-x screen-frame)
+                             :y (+ (.-y screen-frame) (half-screen-height window screen-frame))
+                             :width (.-width screen-frame)
+                             :height (half-screen-height window screen-frame)}))))
+
 (defn to-left-half []
   (when-let [window (.focused js/Window)]
     (let [screen-frame (.flippedVisibleFrame (.screen window))]
       (.setFrame window #js {:x (.-x screen-frame)
+                             :y (.-y screen-frame)
+                             :width (half-screen-width window screen-frame)
+                             :height (.-height screen-frame)}))))
+
+(defn to-right-half []
+  (when-let [window (.focused js/Window)]
+    (let [screen-frame (.flippedVisibleFrame (.screen window))]
+      (.setFrame window #js {:x (+ (.-x screen-frame) (* 0.5 (.-width screen-frame)))
                              :y (.-y screen-frame)
                              :width (half-screen-width window screen-frame)
                              :height (.-height screen-frame)}))))
@@ -78,14 +102,6 @@
                              :y (+ (.-y screen-frame) (* 0.5 (.-height screen-frame)))
                              :width (half-screen-width window screen-frame)
                              :height (half-screen-height window screen-frame)}))))
-
-(defn to-right-half []
-  (when-let [window (.focused js/Window)]
-    (let [screen-frame (.flippedVisibleFrame (.screen window))]
-      (.setFrame window #js {:x (+ (.-x screen-frame) (* 0.5 (.-width screen-frame)))
-                             :y (.-y screen-frame)
-                             :width (half-screen-width window screen-frame)
-                             :height (.-height screen-frame)}))))
 
 (defn to-right-up []
   (when-let [window (.focused js/Window)]
@@ -245,11 +261,13 @@
 
    (bind "left" ["alt" "cmd"] to-left-half)
    (bind "right" ["alt" "cmd"] to-right-half)
+   (bind "up" ["alt" "cmd"] to-upper-half)
+   (bind "down" ["alt" "cmd"] to-lower-half)
 
-   (bind "right" ["shift" "ctrl" "alt"] trim-left)
    (bind "left" ["shift" "ctrl" "alt"] trim-right)
-   (bind "down" ["shift" "ctrl" "alt"] trim-upper)
+   (bind "right" ["shift" "ctrl" "alt"] trim-left)
    (bind "up" ["shift" "ctrl" "alt"] trim-lower)
+   (bind "down" ["shift" "ctrl" "alt"] trim-upper)
 
    (bind "left" ["ctrl" "alt"] extend-left)
    (bind "right" ["ctrl" "alt"] extend-right)
