@@ -190,10 +190,11 @@
 (defn extend-left []
   (when-let [window (.focused js/Window)]
     (let [window-frame (.frame window)]
-      (.setFrame window #js {:x (- (.-x window-frame) (* margin (.-width window-frame)))
-                             :y (.-y window-frame)
-                             :width (* (+ 1 margin) (.-width window-frame))
-                             :height (.-height window-frame)}))))
+      (if (> (- (.-x window-frame) (* margin (.-width window-frame))) 0)
+        (.setFrame window #js {:x (- (.-x window-frame) (* margin (.-width window-frame)))
+                               :y (.-y window-frame)
+                               :width (* (+ 1 margin) (.-width window-frame))
+                               :height (.-height window-frame)})))))
 
 (def round js/Math.round)
 
